@@ -1,12 +1,11 @@
 import { addDoc, collection, deleteDoc, doc, onSnapshot, query, updateDoc, where } from "firebase/firestore";
 import React, { useState, useEffect} from "react";
-import{ View, Text, TextInput, Button, FlatList, Pressable, Modal, Alert, ImageBackground, ScrollView } from 'react-native';
+import{ View, Text, TextInput, Button, FlatList, Pressable, Modal, Alert, ImageBackground, ScrollView, StyleSheet } from 'react-native';
 import { auth, db } from "../../firebaseconfig";
 import { signOut } from 'firebase/auth';
-import { styles } from "../components/Style";
 import { Image } from 'expo-image';
 import { useFonts } from 'expo-font';
-import firebase from "firebase/compat/app";
+
 
 export default function App( {usuario} ){
 
@@ -15,7 +14,7 @@ export default function App( {usuario} ){
     });
     
     const fundo = require('../../assets/fundo.png');
-    const pedra = require('../../assets/pedra.png');
+    const pedra = require('../../assets/pedra.jpg');
     const madeira = require('../../assets/madeira.png');
     const lapis = require('../../assets/lapis.png');
     const lixeira = require('../../assets/lixeira.png');
@@ -55,23 +54,6 @@ export default function App( {usuario} ){
         return() => consulta();
     }, []);
 
-    const adicionarTarefa = async () => {
-        if(tarefa.trim() === ""){
-            return;
-        }
-        try{
-            await addDoc(collection(db, "mensagens"), {
-                texto: tarefa,
-                data: new Date().toISOString(),
-                uid: usuario.uid, //associa o usuário
-            });
-            console.log("Documento inserido!");
-            setTarefa("");
-        }catch(error){
-            console.log("Erro: " + error);
-        }
-    }
-
     const adicionarLivro = async () => {
         if(titulo.trim() === "" && autor.trim() === ""){
             return;
@@ -90,15 +72,6 @@ export default function App( {usuario} ){
         }
     }
 
-    const atualizarTarefa = async (id: string) => {
-        try{
-            const docReferencia = doc(db, "mensagens", id);
-            await updateDoc(docReferencia, {texto: "TAREFA ATUALIZADA!!!"})
-        }catch(error){
-            console.log("ERRO UPDATE", error);
-        }
-    }
-
     const atualizarLivro = async (id: string, titulo: string, autor: string) => {
         try{
             const docReferencia = doc(db, "mensagens", id);
@@ -110,11 +83,6 @@ export default function App( {usuario} ){
     }
     
 //não é obrigatório usar try catch
-    const deletarTarefa = async (id: string) => {
-        await deleteDoc(doc(db, "mensagens", id));
-    
-    }
-
     const deletarLivro = async (id: string) => {
         await deleteDoc(doc(db, "mensagens", id));
     
@@ -122,204 +90,130 @@ export default function App( {usuario} ){
 
     return(
 
-        <ImageBackground source={fundo} resizeMode="cover" style={{ flex: 1 }}>
+        <ImageBackground source={fundo} resizeMode="cover" style={styles.fundo}>
 
-            <View style={{flex: 1, padding: 20}}>
+            <View style={styles.view1}>
 
-                <Text style={{
-                    fontSize: 31,
-                    textAlign: 'center',
-                    fontFamily: 'Fonte-Mine',
-                    color: 'white',
-                    marginTop: 30,
-                }}>
-                    Meus Livros
-                </Text>
+                <Text style={styles.titulo1}>Meus Livros</Text>
 
-                <Image
-                    style={{
-                        width: 125, 
-                        height: 125, 
-                        marginLeft: 110, 
-                        marginBottom: 30
-                    }}
-                    source={livro}
-                    contentFit="cover"
-                />
+                <Image style={styles.livro} source={livro} contentFit="cover"/>
 
                 <TextInput 
                     placeholder="Digite o titulo..." 
                     value={titulo} 
                     onChangeText={setTitulo} 
-                    style={{
-                        backgroundColor: 'white',
-                        opacity: 0.6,
-                        borderWidth: 1,
-                        borderRadius: 2,
-                        borderColor: 'white',
-                        marginBottom: 10,
-                        fontFamily: 'Fonte-Mine',
-                    }}
+                    style={styles.input}
                 />
 
                 <TextInput 
                     placeholder="Digite o autor..." 
                     value={autor} 
                     onChangeText={setAutor} 
-                    style={{
-                        backgroundColor: 'white',
-                        opacity: 0.6,
-                        borderWidth: 1,
-                        borderRadius: 2,
-                        borderColor: 'white',
-                        marginBottom: 10,
-                        fontFamily: 'Fonte-Mine',
-                    }}
+                    style={styles.input}
                 />
                 
                 <Pressable onPress={adicionarLivro}>
-                    <Image source={adicionar} style={{width: 220, height: 36, marginBottom: 20}}/>
+                    <Image source={adicionar} style={styles.adicionar}/>
                 </Pressable>
                 
-                
-                <Text style={{
-                    fontSize: 18,
-                    textAlign: 'center',
-                    fontFamily: 'Fonte-Mine',
-                    color: 'white',
-                }}>
-                    Lista Livros
-                </Text>
+                <Text style={styles.titulo2}>Lista Livros</Text>
 
-                <ImageBackground 
-                    source={madeira} 
-                    style={{
-                        marginTop: 20, 
-                        marginBottom: 20, 
-                        width: 345, 
-                        height: 150, 
-                        paddingTop: 20, 
-                        paddingBottom: 20, 
-                        alignItems: 'center',
-                    }}>
+                <ImageBackground source={madeira} style={styles.madeira}>
 
                 <FlatList
                     data={lista}
                     keyExtractor={(item) => item.id}
                     renderItem={( {item} ) => (
                         
-                            <View style={{
-                                flexDirection: 'row',
-                                justifyContent: 'space-between',
-                                alignItems: 'center'
-                            }}>
+                            <View style={styles.view2}>
+
                                 <ScrollView>
 
-                                    <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#ffffff50', width: 320, borderWidth: 2, borderRadius: 5, padding: 5, marginBottom: 10}}>
+                                    <View style={styles.view3}>
                                         
-                                        <View style={{justifyContent: 'space-between', padding: 3, width: 230}}>
-                                            <Text style={{fontFamily: 'Fonte-Mine', fontSize: 10}}>Título: {item.titulo}</Text>
-                                            <Text style={{fontFamily: 'Fonte-Mine', fontSize: 10}}>Autor: {item.autor}</Text>
+                                        <View style={styles.view4}>
+                                            <Text style={styles.texto}>Título: {item.titulo}</Text>
+                                            <Text style={styles.texto}>Autor: {item.autor}</Text>
                                         </View>
 
-                                        <View style={{flexDirection: "row"}}>
+                                        <View style={styles.view5}>
                                             
                                             <Modal
                                                 animationType="slide"
                                                 transparent={true}
                                                 visible={modalVisible}
                                                 onRequestClose={() => {
-                                                    Alert.alert('Modal has been closed.');
+                                                    Alert.alert('O modal foi fechado.');
                                                     setModalVisible(!modalVisible);
                                                 }}
                                             >
                                                     
-                                                <View style={{flex: 1, justifyContent: 'flex-start', alignItems: 'center'}}>
-                                                    <ImageBackground source={pedra} style={{margin: 20, width: 350, padding: 35, alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 2, }, shadowOpacity: 0.25, shadowRadius: 4, elevation: 5,}}>
+                                                <View style={styles.view6}>
+                                                    <ImageBackground source={pedra} style={styles.pedra}>
                                                     
-                                                    <Text
-                                                        style={{
-                                                            fontSize: 20,
-                                                            marginBottom: 10,
-                                                            textAlign: 'center',
-                                                            fontFamily: 'Fonte-Mine',
-                                                            color: 'white',
-                                                        }}
-                                                    >
-                                                        Editar
-                                                    </Text>
+                                                    <Text style={styles.titulo3}>Editar</Text>
 
                                                     <TextInput
                                                         placeholder='Título...'
                                                         value={item.titulo}
                                                         onChangeText={setTitulo}
                                                         autoCapitalize='none'
-                                                        style={{
-                                                            backgroundColor: 'white',
-                                                            opacity: 0.6,
-                                                            width: 300,
-                                                            borderWidth: 1,
-                                                            borderRadius: 2,
-                                                            borderColor: 'white',
-                                                            marginBottom: 10,
-                                                            fontFamily: 'Fonte-Mine',
-                                                        }}
+                                                        style={styles.inputModel}
                                                     />
+
                                                     <TextInput
                                                         placeholder='Autor...'
                                                         value={item.autor}
                                                         onChangeText={setAutor}
                                                         autoCapitalize='none'
-                                                        style={{
-                                                            backgroundColor: 'white',
-                                                            opacity: 0.6,
-                                                            width: 300,
-                                                            borderWidth: 1,
-                                                            borderRadius: 2,
-                                                            borderColor: 'white',
-                                                            marginBottom: 10,
-                                                            fontFamily: 'Fonte-Mine',
-                                                        }}
+                                                        style={styles.inputModel}
                                                     />
 
-                                                    <View style={{flexDirection: 'row', marginBottom: 20, width: 300, justifyContent: 'space-between'}}>
+                                                    <View style={styles.view7}>
                                                         
                                                         <Pressable onPress={() => atualizarLivro(item.id, item.titulo, item.autor)}>
-                                                            <Image source={atualizar} style={{width: 120, height: 35}}/>
+                                                            <Image source={atualizar} style={styles.bt}/>
                                                         </Pressable>
 
                                                         <Pressable onPress={() => setModalVisible(!modalVisible)}>
-                                                            <Image source={voltar} style={{width: 120, height: 35}}/>
+                                                            <Image source={voltar} style={styles.bt}/>
                                                         </Pressable>
                                                         
                                                     </View>
                                                                                 
                                                     </ImageBackground>
+
                                                 </View>
+
                                             </Modal>
 
                                             <Pressable onPress={() => setModalVisible(true)}>
-                                                <Image source={lapis} style={{width: 40, height: 40}} />
+                                                <Image source={lapis} style={styles.bt2} />
                                             </Pressable>
 
                                             <Pressable onPress={() => deletarLivro(item.id)}>
-                                                <Image source={lixeira} style={{width: 40, height: 40}} />
+                                                <Image source={lixeira} style={styles.bt2} />
                                             </Pressable>
+
                                         </View>
+
                                     </View>
+
                                 </ScrollView>
                                 
                             </View>
                         
                     )}
+
                 />
+
                 </ImageBackground>
 
-                <View style={{flexDirection: 'row',justifyContent: 'flex-end', marginBottom: 30}}>
+                <View style={styles.view8}>
 
                     <Pressable onPress={() => signOut(auth)}>
 
-                        <Image source={sair} style={{width: 130, height: 36}}/>
+                        <Image source={sair} style={styles.sair}/>
 
                     </Pressable>
 
@@ -328,5 +222,165 @@ export default function App( {usuario} ){
             </View>
 
         </ImageBackground>
+
     );
 }
+
+const styles = StyleSheet.create({
+
+    fundo: {
+        flex: 1,
+    },
+
+    view1: {
+        flex: 1, 
+        padding: 20,
+    },
+
+    titulo1: {
+        fontSize: 31,
+        textAlign: 'center',
+        fontFamily: 'Fonte-Mine',
+        color: 'white',
+        marginTop: 30,
+    },
+
+    livro: {
+        width: 125, 
+        height: 125, 
+        marginLeft: 110, 
+        marginBottom: 15,
+    },
+    
+    input: {
+        backgroundColor: 'white',
+        opacity: 0.6,
+        borderWidth: 1,
+        borderRadius: 2,
+        borderColor: 'white',
+        marginBottom: 10,
+        fontFamily: 'Fonte-Mine',
+    },
+
+    adicionar: {
+        width: 220, 
+        height: 36, 
+        marginBottom: 20,
+    },
+
+    titulo2: {
+        fontSize: 18,
+        textAlign: 'center',
+        fontFamily: 'Fonte-Mine',
+        color: 'white',
+    },
+
+    madeira: {
+        marginTop: 20, 
+        marginBottom: 20, 
+        width: 345, 
+        height: 150, 
+        paddingTop: 20, 
+        paddingBottom: 20, 
+        alignItems: 'center',
+    },
+
+    view2: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+
+    view3: {
+        flexDirection: 'row', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        backgroundColor: '#ffffff50',
+        width: 320, 
+        borderWidth: 2, 
+        borderRadius: 5, 
+        padding: 5, 
+        marginBottom: 10,
+    },
+
+    view4: {
+        justifyContent: 'space-between', 
+        padding: 3, 
+        width: 230,
+    },
+
+    texto: {
+        fontFamily: 'Fonte-Mine', 
+        fontSize: 10,
+    },
+
+    view5: {
+        flexDirection: 'row',
+    },
+
+    view6: {
+        flex: 1, 
+        justifyContent: 'flex-start', 
+        alignItems: 'center',
+         backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    },
+
+    pedra: {
+        margin: 20, 
+        width: 350, 
+        padding: 35,
+        alignItems: 'center', 
+        shadowColor: '#000', 
+        shadowOffset: { width: 0, height: 2, }, 
+        shadowOpacity: 0.25, 
+        shadowRadius: 4, 
+        elevation: 5,
+    },
+
+    titulo3: {
+        fontSize: 20,
+        marginBottom: 10,
+        textAlign: 'center',
+        fontFamily: 'Fonte-Mine',
+        color: 'white',
+    },
+
+    inputModel: {
+        backgroundColor: 'white',
+        opacity: 0.6,
+        width: 300,
+        borderWidth: 1,
+        borderRadius: 2,
+        borderColor: 'white',
+        marginBottom: 10,
+        fontFamily: 'Fonte-Mine',
+    },
+
+    view7: {
+        flexDirection: 'row', 
+        marginBottom: 20, 
+        width: 300, 
+        justifyContent: 'space-between',
+    },
+
+    bt: {
+        width: 120, 
+        height: 35,
+    },
+
+    bt2: {
+        width: 40, 
+        height: 40,
+    },
+
+    view8: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end', 
+        marginBottom: 30,
+    },
+
+    sair: {
+        width: 130, 
+        height: 36,
+    },
+});

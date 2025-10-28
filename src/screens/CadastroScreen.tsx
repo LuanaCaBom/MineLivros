@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, ImageBackground, Pressable, ScrollView } from "react-native";
+import { View, Text, TextInput, Button, ImageBackground, Pressable, ScrollView, StyleSheet } from "react-native";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebaseconfig";
-import { styles } from "../components/Style";
 import { Image } from 'expo-image';
 import { useFonts } from 'expo-font';
 
@@ -31,61 +30,24 @@ export default function CadastroScreen({ navigation }) {
     }
 
    return (
-        <ImageBackground source={fundo} resizeMode="cover" style={{ flex: 1 }}>
+        <ImageBackground source={fundo} resizeMode="cover" style={styles.fundo}>
 
             <ScrollView>
 
-                <View style={{ flex: 1, padding: 20, paddingBottom: 500 }}>
+                <View style={styles.view1}>
 
-                    <Text 
-                        style={{
-                            fontSize: 31,
-                            marginTop: 60,
-                            textAlign: 'center',
-                            fontFamily: 'Fonte-Mine',
-                            color: 'white',
-                        }}
-                    >
-                        Meus Livros
-                    </Text>
+                    <Text style={styles.titulo1}>Meus Livros</Text>
 
-                    <Image
-                        style={{
-                            width: 150, 
-                            height: 150, 
-                            marginLeft: 100, 
-                            marginBottom: 20
-                        }}
-                        source={mesa}
-                        contentFit="cover"
-                    />
+                    <Image style={styles.mesa} source={mesa} contentFit="cover"/>
 
-                    <Text 
-                        style={{
-                            fontSize: 30,
-                            marginBottom: 30,
-                            textAlign: 'center',
-                            fontFamily: 'Fonte-Mine',
-                            color: 'white',
-                        }}
-                    >
-                        Cadastro
-                    </Text>
+                    <Text style={styles.titulo2}>Cadastro</Text>
 
                     <TextInput
                         placeholder='Email...'
                         value={email}
                         onChangeText={setEmail}
                         autoCapitalize='none'
-                        style={{
-                            backgroundColor: 'white',
-                            opacity: 0.6,
-                            borderWidth: 1,
-                            borderRadius: 2,
-                            borderColor: 'white',
-                            marginBottom: 10,
-                            fontFamily: 'Fonte-Mine',
-                        }}
+                        style={styles.input}
                     />
 
                     <TextInput
@@ -93,31 +55,21 @@ export default function CadastroScreen({ navigation }) {
                         value={senha}
                         onChangeText={setSenha}
                         secureTextEntry
-                        style={{
-                            backgroundColor: 'white',
-                            opacity: 0.6,
-                            borderWidth: 1,
-                            borderRadius: 2,
-                            borderColor: 'white',
-                            marginBottom: 10,
-                            fontFamily: 'Fonte-Mine',
-                        }}
+                        style={styles.input}
                     />
 
-                    {erro ? 
-                        <Text style={{color: 'red', fontFamily: 'Fonte-Mine', fontSize: 10}}>
-                            {erro}
-                        </Text>
-                    : null}
+                    {erro ? <Text style={styles.erro}>{erro}</Text> : null}
 
-                    <View style={{flexDirection: "row", justifyContent: 'space-between'}}>
-                        <Pressable onPress={cadastro} >
-                            <Image source={cadastrar} style={{width: 130, height: 40}}/>
+                    <View style={styles.view2}>
+
+                        <Pressable onPress={cadastro}>
+                            <Image source={cadastrar} style={styles.botao}/>
                         </Pressable>
 
-                        <Pressable onPress={() => navigation.goBack()} >
-                            <Image source={voltar} style={{width: 130, height: 40}}/>
+                        <Pressable onPress={() => navigation.goBack()}>
+                            <Image source={voltar} style={styles.botao}/>
                         </Pressable>
+
                     </View>
 
                 </View>
@@ -128,3 +80,65 @@ export default function CadastroScreen({ navigation }) {
 
    );
 }
+
+const styles = StyleSheet.create({
+
+    fundo: {
+        flex: 1,
+    },
+
+    view1: {
+        flex: 1, 
+        padding: 20, 
+        paddingBottom: 450,
+    },
+
+    titulo1: {
+        fontSize: 31,
+        textAlign: 'center',
+        fontFamily: 'Fonte-Mine',
+        color: 'white',
+        marginTop: 30,
+    },
+
+    mesa: {
+        width: 150, 
+        height: 150, 
+        marginLeft: 100, 
+        marginBottom: 20,
+    },
+
+    titulo2: {
+        fontSize: 30,
+        marginBottom: 30,
+        textAlign: 'center',
+        fontFamily: 'Fonte-Mine',
+        color: 'white',
+    },
+
+    input: {
+        backgroundColor: 'white',
+        opacity: 0.6,
+        borderWidth: 1,
+        borderRadius: 2,
+        borderColor: 'white',
+        marginBottom: 10,
+        fontFamily: 'Fonte-Mine',
+    },
+
+    erro: {
+        color: 'red', 
+        fontFamily: 'Fonte-Mine', 
+        fontSize: 10,
+    },
+
+    view2: {
+        flexDirection: "row", 
+        justifyContent: 'space-between',
+    },
+
+    botao: {
+        width: 130, 
+        height: 40,
+    },
+});
