@@ -7,11 +7,16 @@ import HomeScreen from '../screens/HomeScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../firebaseconfig';
+import { useFonts } from 'expo-font';
 
 const Stack = createNativeStackNavigator();
 
 export default function Navigator() {
     
+    const [fontsLoaded] = useFonts({
+            'Fonte-Mine': require('../../assets/PressStart2P-Regular.ttf')
+        });
+
     const [usuario, setUsuario] = useState(null);
     const [carrega, setCarrega] = useState(true);
 
@@ -31,15 +36,24 @@ export default function Navigator() {
         <NavigationContainer>
             <Stack.Navigator>
                 { usuario ? (
-                    <Stack.Screen name="Home">
+                    <Stack.Screen name="Home" options={{headerTitleStyle:{fontFamily: 'Fonte-Mine'}}}  >
                         {(props) =>
                             <HomeScreen {...props} usuario = {usuario}/>
                         }
                     </Stack.Screen>
                 ) : ( 
                     <>
-                        <Stack.Screen name="Login" component={LoginScreen} />
-                        <Stack.Screen name="Cadastro" component={CadastroScreen} />
+                        <Stack.Screen 
+                            name="Login" 
+                            options={{headerTitleStyle:{fontFamily: 'Fonte-Mine'}}}  
+                            component={LoginScreen} 
+                        />
+
+                        <Stack.Screen 
+                            name="Cadastro"
+                            options={{headerTitleStyle:{fontFamily: 'Fonte-Mine'}}}   
+                            component={CadastroScreen} 
+                        />
                     </>
                 )}
             </Stack.Navigator>
