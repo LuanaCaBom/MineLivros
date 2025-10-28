@@ -25,7 +25,7 @@ export default function App( {usuario} ){
     const livro = require('../../assets/livro.gif');
     
     const [lista, setLista] = useState<any[]>([]);
-    const [tarefa, setTarefa] = useState("");
+    const [idAtualizacao, setIdAtualizacao] = useState("");
     const [titulo, setTitulo] = useState("");
     const [autor, setAutor] = useState("");
 
@@ -49,7 +49,6 @@ export default function App( {usuario} ){
                 listaAux.push({id: doc.id, ...doc.data() })
             })
             setLista(listaAux);
-            console.log("Lista" + lista.length);
         })
         return() => consulta();
     }, []);
@@ -64,7 +63,6 @@ export default function App( {usuario} ){
                 autor: autor,
                 uid: usuario.uid, //associa o usuário
             });
-            console.log("Livro inserido!");
             setTitulo("");
             setAutor("");
         }catch(error){
@@ -72,17 +70,26 @@ export default function App( {usuario} ){
         }
     }
 
+    const atualizarModal = async (id: string, titulo: string, autor: string) => {
+        setModalVisible(true)
+        setIdAtualizacao(id)
+        setTitulo(titulo)
+        setAutor(autor)
+    }
+
     const atualizarLivro = async (id: string, titulo: string, autor: string) => {
         try{
-            const docReferencia = doc(db, "mensagens", id);
+            const docReferencia = doc(db, "mensagens", idAtualizacao);
             await updateDoc(docReferencia, {titulo: titulo, autor: autor})
             setModalVisible(!modalVisible)
+            setTitulo("")
+            setAutor("")
         }catch(error){
             console.log("Erro ao Atualizar: ", error);
         }
     }
     
-//não é obrigatório usar try catch
+    //não é obrigatório usar try catch
     const deletarLivro = async (id: string) => {
         await deleteDoc(doc(db, "mensagens", id));
     
@@ -155,7 +162,7 @@ export default function App( {usuario} ){
 
                                                     <TextInput
                                                         placeholder='Título...'
-                                                        value={item.titulo}
+                                                        value={titulo}
                                                         onChangeText={setTitulo}
                                                         autoCapitalize='none'
                                                         style={styles.inputModel}
@@ -163,7 +170,7 @@ export default function App( {usuario} ){
 
                                                     <TextInput
                                                         placeholder='Autor...'
-                                                        value={item.autor}
+                                                        value={autor}
                                                         onChangeText={setAutor}
                                                         autoCapitalize='none'
                                                         style={styles.inputModel}
@@ -171,7 +178,7 @@ export default function App( {usuario} ){
 
                                                     <View style={styles.view7}>
                                                         
-                                                        <Pressable onPress={() => atualizarLivro(item.id, item.titulo, item.autor)}>
+                                                        <Pressable onPress={() => atualizarLivro(item.id, titulo, autor)}>
                                                             <Image source={atualizar} style={styles.bt}/>
                                                         </Pressable>
 
@@ -187,7 +194,7 @@ export default function App( {usuario} ){
 
                                             </Modal>
 
-                                            <Pressable onPress={() => setModalVisible(true)}>
+                                            <Pressable onPress={() => atualizarModal(item.id, item.titulo, item.autor)}>
                                                 <Image source={lapis} style={styles.bt2} />
                                             </Pressable>
 
@@ -320,7 +327,7 @@ const styles = StyleSheet.create({
 
     view6: {
         flex: 1, 
-        justifyContent: 'flex-start', 
+        justifyContent: 'center', 
         alignItems: 'center',
          backgroundColor: 'rgba(0, 0, 0, 0.6)',
     },
